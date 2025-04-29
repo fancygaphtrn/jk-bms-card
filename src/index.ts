@@ -98,8 +98,7 @@ export class JkBmsCard extends LitElement{
 
         event.stopPropagation();
 
-        var fullEntityId = type + "." + this._config?.prefix + "_" + entityId;
-        console.log(`hass-more-info = ${fullEntityId}`);
+        const fullEntityId = type + "." + this._config?.prefix + "_" + entityId;
         let customEvent = new CustomEvent('hass-more-info', {
             detail: { entityId: fullEntityId },
             composed: true,

@@ -47,7 +47,7 @@ const plugins = [
             ]
         ]
     }),
-   // terser()
+    terser()
 ];
 
 export default {
