@@ -1,5 +1,3 @@
-dist/*
-
 .devcontainer/*
 !.devcontainer/recommended-devcontainer.json
 !.devcontainer/recommended-Dockerfile
