@@ -1,0 +1,12 @@
+{
+  "common": {
+    "title": "JK BMS Card",
+    "description": "A customizable Home Assistant card to emulate the JK BMS screen",
+    "version": "Version"
+  },
+  "config": {
+    "title": "Title",
+    "prefix": "Prefix of the sensors",
+    "cellCount": "Number of cells"
+  }
+}
