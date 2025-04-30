@@ -31,7 +31,9 @@ export class JkBmsCard extends LitElement{
         return {
             title: localize("title"),
             prefix: "jk_bms",
-            cellCount: 16
+            cellCount: 16,
+            cellColumns: 2,
+            cellLayout: "bankMode",
         } as unknown as JkBmsCardConfig;
     }
 
@@ -51,8 +53,13 @@ export class JkBmsCard extends LitElement{
             margin: 4px;
         }
         .grid-1 { grid-template-columns: 1fr; }
-        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
         .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        .grid-6 { grid-template-columns: repeat(6, 1fr); }
+        .grid-7 { grid-template-columns: repeat(7, 1fr); }
+        .grid-8 { grid-template-columns: repeat(8, 1fr); }
         .clickable {
             cursor: pointer;
         }
@@ -79,6 +86,10 @@ export class JkBmsCard extends LitElement{
             border-width: var(--ha-card-border-width,1px);
             border-style: solid;
             border-color: var(--ha-card-border-color, var(--divider-color, #e0e0e0));
+        }
+        .error-message {
+            color: red;
+            font-style: italic;
         }
         .button-padding {
             padding-top: 0.75rem;
@@ -132,21 +143,23 @@ export class JkBmsCard extends LitElement{
         </div>
 
         <div class="grid grid-3">
-          ${this._renderSwitch('charging', 'Charge')}
-          ${this._renderSwitch('discharging', 'Discharge')}
-          ${this._renderSwitch('balancer', 'Balance')}
+          ${this._renderSwitch('charging', 'charge')}
+          ${this._renderSwitch('discharging', 'discharge')}
+          ${this._renderSwitch('balancer', 'balance')}
         </div>
+          
+          ${this._renderError()}
 
         <div class="grid grid-2 section-padding">
           <div class="stats-padding stats-border">
             <div class="clickable center" @click=${(e) => this._navigate(e, `total_voltage`)}>
               <b><font color="#41CD52" size="6">${this._state('total_voltage')} V</font></b>
             </div>
-            Power: <span class="clickable ${powerClass}" @click=${(e) => this._navigate(e, `power`)}>${this._state('power')} W</span><br>
-            Capacity: <span class="clickable" @click=${(e) => this._navigate(e, `total_battery_capacity_setting`)}>${this._state('total_battery_capacity_setting')} Ah</span><br>
-            Cycle Cap: <span class="clickable" @click=${(e) => this._navigate(e, `total_charging_cycle_capacity`)}>${this._state('total_charging_cycle_capacity')} Ah</span><br>
-            Avg Cell V: <span class="clickable" @click=${(e) => this._navigate(e, `average_cell_voltage`)}>${this._state('average_cell_voltage')} V</span><br>
-            Balance Cur: <span style="color: ${balanceCurrent > 0 ? 'red' : balanceCurrent < 0 ? '#3090C7' : '#808080'};">
+              ${localize('stats.power')} <span class="clickable ${powerClass}" @click=${(e) => this._navigate(e, `power`)}>${this._state('power')} W</span><br>
+              ${localize('stats.capacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_battery_capacity_setting`)}>${this._state('total_battery_capacity_setting')} Ah</span><br>
+              ${localize('stats.cycleCapacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_charging_cycle_capacity`)}>${this._state('total_charging_cycle_capacity')} Ah</span><br>
+              ${localize('stats.averageCellV')} <span class="clickable" @click=${(e) => this._navigate(e, `average_cell_voltage`)}>${this._state('average_cell_voltage')} V</span><br>
+              ${localize('stats.balanceCurrent')} <span style="color: ${balanceCurrent > 0 ? 'red' : balanceCurrent < 0 ? '#3090C7' : '#808080'};">
               ${balanceCurrent.toFixed(1)} A
             </span>
           </div>
@@ -155,21 +168,29 @@ export class JkBmsCard extends LitElement{
             <div class="clickable center" @click=${(e) => this._navigate(e, `current`)}>
               <b><font color="#41CD52" size="6">${this._state('current')} A</font></b>
             </div>
-            SOC: <span class="clickable" @click=${(e) => this._navigate(e, `state_of_charge`)}>${this._state('state_of_charge')} %</span><br>
-            Remaining: <span class="clickable" @click=${(e) => this._navigate(e, `capacity_remaining`)}>${this._state('capacity_remaining')} Ah</span><br>
-            Cycles: <span class="clickable" @click=${(e) => this._navigate(e, `charging_cycles`)}>${this._state('charging_cycles')}</span><br>
-            Delta V: <span style="color: ${deltaCellV >= Number(this._state("balance_trigger_voltage", "", "number")) ? '#FFA500' : '#41CD52'};">
+              ${localize('stats.stateOfCharge')} <span class="clickable" @click=${(e) => this._navigate(e, `state_of_charge`)}>${this._state('state_of_charge')} %</span><br>
+              ${localize('stats.remainingAmps')} <span class="clickable" @click=${(e) => this._navigate(e, `capacity_remaining`)}>${this._state('capacity_remaining')} Ah</span><br>
+              ${localize('stats.cycles')} <span class="clickable" @click=${(e) => this._navigate(e, `charging_cycles`)}>${this._state('charging_cycles')}</span><br>
+              ${localize('stats.delta')} <span style="color: ${deltaCellV >= Number(this._state("balance_trigger_voltage", "", "number")) ? '#FFA500' : '#41CD52'};">
               ${deltaCellV.toFixed(3)} V
             </span><br>
-            MOS Temp: <span class="clickable" @click=${(e) => this._navigate(e, `power_tube_temperature`)}>${this._state('power_tube_temperature')} °C</span>
+              ${localize('stats.mosfetTemp')} <span class="clickable" @click=${(e) => this._navigate(e, `power_tube_temperature`)}>${this._state('power_tube_temperature')} °C</span>
           </div>
         </div>
 
-        <div class="grid grid-2">
-          ${this._renderCells()}
+        <div class="grid grid-${this._config.cellColumns ?? 2}">
+          ${this._renderCells(this._config.cellLayout == "bankMode")}
         </div>
       </ha-card>
     `;
+    }
+
+    private _renderError() {
+        const state = this._state('errors', '', "sensor");
+        if (state.trim().length <= 1) {
+            return html``
+        }
+        return html`<span class="error-message">${state}</span>`
     }
 
     private _renderSwitch(entityId: string, label: string): TemplateResult {
@@ -177,7 +198,7 @@ export class JkBmsCard extends LitElement{
         const colorClass = state === 'on' ? 'status-on' : 'status-off';
         return html`
       <div class="button-border button-padding center clickable" @click=${(e) => this._navigate(e, `${entityId}`, "switch")}>
-        ${label}: <span class="${colorClass}">${state.toUpperCase()}</span>
+        ${localize('switches.'+label)}: <span class="${colorClass}">${state.toUpperCase()}</span>
       </div>
     `;
     }
@@ -186,14 +207,23 @@ export class JkBmsCard extends LitElement{
         const cells: TemplateResult[] = [];
 
         const start = 1;
+        const columns = this._config?.cellColumns ?? 2;
         const totalCells =  this._config?.cellCount ?? 16;
-        const end = bankmode ? totalCells / 2 : totalCells;
-        const bankOffset = totalCells / 2;
+        const bankOffset = Math.floor(totalCells / columns);
+        const end = bankmode ? Math.ceil(totalCells / columns) : totalCells;
+        const uneven = totalCells % columns
 
         for (let i = start; i <= end; i++) {
-            cells.push(this._createCell(i));
-            if (bankmode) {
-                cells.push(this._createCell(i + bankOffset));
+            if (bankmode && uneven && i == end) {
+                cells.push(this._createCell(totalCells));
+            } else  {
+                cells.push(this._createCell(i));
+            }
+
+            if (bankmode && (i < end || !uneven)) {
+                for (let ii = 1; ii < columns; ii++) {
+                    cells.push(this._createCell(i + (bankOffset * ii)));
+                }
             }
         }
 

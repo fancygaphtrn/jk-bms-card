@@ -7,6 +7,25 @@
   "config": {
     "title": "Title",
     "prefix": "Prefix of the sensors",
-    "cellCount": "Number of cells"
+    "cellCount": "Number of cells",
+    "cellColumns": "Number of columns",
+    "cellLayout": "Cell Layout"
+  },
+  "switches": {
+    "charge": "Charge",
+    "discharge": "Discharge",
+    "balance": "Balance"
+  },
+  "stats": {
+    "power": "Power:",
+    "capacity": "Capacity:",
+    "cycleCapacity": "Cycle Cap:",
+    "averageCellV": "Avg Cell V:",
+    "balanceCurrent": "Balance Cur:",
+    "stateOfCharge": "SOC:",
+    "remainingAmps": "Remaining:",
+    "cycles": "Cycles:",
+    "delta": "Delta V:",
+    "mosfetTemp": "MOS Temp:"
   }
 }

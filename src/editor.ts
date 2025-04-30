@@ -57,7 +57,14 @@ export class JkBmsCardEditor extends LitElement implements LovelaceCardEditor {
                             {
                                 type: 'grid',
                                 schema: [
-                                    {name: 'cellCount', selector: {number: {min: 2, max: 24, step: 2}}},
+                                    {name: 'cellCount', selector: {number: {min: 2, max: 48, step: 2}}},
+                                    {name: 'cellColumns', selector: {number: {min: 1, max: 8, step: 1}}},
+                                    {name: 'cellLayout', selector: { select: {
+                                                options: [
+                                                    { label: 'Incremental', value: 'incremental' },
+                                                    { label: 'Bank Mode', value: 'bankMode' },
+                                                ]
+                                            } }}
                                 ],
                             },
                         ],
