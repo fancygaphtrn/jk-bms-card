@@ -182,7 +182,7 @@ export class JkBmsCard extends LitElement{
               ${localize('stats.capacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_battery_capacity_setting`)}>${this._state('total_battery_capacity_setting')} Ah</span><br>
               ${localize('stats.cycleCapacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_charging_cycle_capacity`)}>${this._state('total_charging_cycle_capacity')} Ah</span><br>
               ${localize('stats.averageCellV')} <span class="clickable" @click=${(e) => this._navigate(e, `average_cell_voltage`)}>${this._state('average_cell_voltage')} V</span><br>
-              ${localize('stats.balanceCurrent')} <span class="${balanceClass};">
+              ${localize('stats.balanceCurrent')} <span class="${balanceClass}">
               ${balanceCurrent.toFixed(1)} A
             </span>
           </div>
