@@ -80,6 +80,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add package.json
+          git add dist/jk-bms-card.js
           git commit -m "chore: bump version to v${{ env.version }}"
           git push
 
