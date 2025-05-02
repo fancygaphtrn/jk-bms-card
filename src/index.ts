@@ -77,13 +77,31 @@ export class JkBmsCard extends LitElement{
         .power-positive {
             color: #41cd52
         }
+        .power-even {
+            color: #808080
+        }
+        .balance-positive {
+            color: red
+        }
+        .balance-negative {
+            color: #3090C7
+        }
+        .balance-even {
+            color: #808080
+        }
+        .delta-needs-balancing {
+            color: #FFA500
+        }
+        .delta-ok {
+            color: #41CD52
+        }
         .stats-border {
-            border-width: var(--ha-card-border-width,1px);
+            border-width: var(--ha-card-border-width, 1px);
             border-style: solid;
             border-color: var(--ha-card-border-color, var(--divider-color, #e0e0e0));
         }
         .button-border {
-            border-width: var(--ha-card-border-width,1px);
+            border-width: var(--ha-card-border-width, 1px);
             border-style: solid;
             border-color: var(--ha-card-border-color, var(--divider-color, #e0e0e0));
         }
@@ -132,7 +150,12 @@ export class JkBmsCard extends LitElement{
 
         const deltaCellV = parseFloat(this._state('delta_cell_voltage', '0'));
         const balanceCurrent = parseFloat(this._state('balancing_current', '0'));
-        const powerClass = Number(this._state('power')) > 0 ? 'power-positive' : 'power-negative'
+        const powerNumber = parseFloat(this._state('power', '0'));
+        const triggerV= Number(this._state("balance_trigger_voltage", "", "number"));
+
+        const powerClass = powerNumber > 0 ? 'power-positive' : powerNumber < 0 ? 'power-negative' : 'power-even'
+        const balanceClass = balanceCurrent > 0 ? 'balance-positive' : balanceCurrent > 0 ? 'balance-negative' : 'balance-even';
+        const deltaClass = deltaCellV >= triggerV ? 'delta-needs-balancing' : 'delta-ok'
 
         return html`
       <ha-card>
@@ -159,7 +182,7 @@ export class JkBmsCard extends LitElement{
               ${localize('stats.capacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_battery_capacity_setting`)}>${this._state('total_battery_capacity_setting')} Ah</span><br>
               ${localize('stats.cycleCapacity')} <span class="clickable" @click=${(e) => this._navigate(e, `total_charging_cycle_capacity`)}>${this._state('total_charging_cycle_capacity')} Ah</span><br>
               ${localize('stats.averageCellV')} <span class="clickable" @click=${(e) => this._navigate(e, `average_cell_voltage`)}>${this._state('average_cell_voltage')} V</span><br>
-              ${localize('stats.balanceCurrent')} <span style="color: ${balanceCurrent > 0 ? 'red' : balanceCurrent < 0 ? '#3090C7' : '#808080'};">
+              ${localize('stats.balanceCurrent')} <span class="${balanceClass};">
               ${balanceCurrent.toFixed(1)} A
             </span>
           </div>
@@ -171,7 +194,7 @@ export class JkBmsCard extends LitElement{
               ${localize('stats.stateOfCharge')} <span class="clickable" @click=${(e) => this._navigate(e, `state_of_charge`)}>${this._state('state_of_charge')} %</span><br>
               ${localize('stats.remainingAmps')} <span class="clickable" @click=${(e) => this._navigate(e, `capacity_remaining`)}>${this._state('capacity_remaining')} Ah</span><br>
               ${localize('stats.cycles')} <span class="clickable" @click=${(e) => this._navigate(e, `charging_cycles`)}>${this._state('charging_cycles')}</span><br>
-              ${localize('stats.delta')} <span style="color: ${deltaCellV >= Number(this._state("balance_trigger_voltage", "", "number")) ? '#FFA500' : '#41CD52'};">
+              ${localize('stats.delta')} <span class="${deltaClass}">
               ${deltaCellV.toFixed(3)} V
             </span><br>
               ${localize('stats.mosfetTemp')} <span class="clickable" @click=${(e) => this._navigate(e, `power_tube_temperature`)}>${this._state('power_tube_temperature')} °C</span>
