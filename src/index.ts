@@ -154,7 +154,7 @@ export class JkBmsCard extends LitElement{
         const triggerV= Number(this._state("balance_trigger_voltage", "", "number"));
 
         const powerClass = powerNumber > 0 ? 'power-positive' : powerNumber < 0 ? 'power-negative' : 'power-even'
-        const balanceClass = balanceCurrent > 0 ? 'balance-positive' : balanceCurrent > 0 ? 'balance-negative' : 'balance-even';
+        const balanceClass = balanceCurrent > 0 ? 'balance-positive' : balanceCurrent < 0 ? 'balance-negative' : 'balance-even';
         const deltaClass = deltaCellV >= triggerV ? 'delta-needs-balancing' : 'delta-ok'
 
         return html`
