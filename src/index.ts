@@ -23,6 +23,9 @@ export class JkBmsCard extends LitElement{
     @property() public hass!: HomeAssistant;
     @property() private _config?: JkBmsCardConfig;
 
+    minCellId: string = '';
+    maxCellId: string = '';
+
     public setConfig(config: JkBmsCardConfig): void {
         this._config = JkBmsCard.getStubConfig();
         this._config = {...this._config, ...config};
@@ -311,6 +314,13 @@ export class JkBmsCard extends LitElement{
         const end = bankmode ? Math.ceil(totalCells / columns) : totalCells;
         const uneven = totalCells % columns
 
+        this.minCellId = this.getState(EntityKey.min_voltage_cell);
+        this.maxCellId = this.getState(EntityKey.max_voltage_cell);
+
+        if (!this.minCellId || !this.maxCellId) {
+            this.calculateDynamicMinMaxCellId(totalCells)
+        }
+
         for (let i = start; i <= end; i++) {
             if (bankmode && uneven && i == end) {
                 cells.push(this._createCell(totalCells));
@@ -328,11 +338,44 @@ export class JkBmsCard extends LitElement{
         return html`${cells}`;
     }
 
+    private calculateDynamicMinMaxCellId(totalCells: number) {
+        let minVoltage = Infinity;
+        let maxVoltage = -Infinity;
+        let minId = 0;
+        let maxId = 0;
+
+        for (let i = 1; i <= totalCells; i++) {
+            const state = this.getState(EntityKey[`cell_voltage_${i}`], '')
+            const voltage = parseFloat(state);
+            if (isNaN(voltage)) {
+                continue;
+            }
+            if (voltage > maxVoltage) {
+                maxVoltage = voltage;
+                maxId = i;
+            }
+
+            if (voltage < minVoltage) {
+                minVoltage = voltage;
+                minId = i;
+            }
+        }
+
+        this.minCellId = String(minId);
+        this.maxCellId = String(maxId);
+    }
+
+    private getMinMaxCell() {
+        const minId = this.getState(EntityKey.min_voltage_cell);
+        const maxId = this.getState(EntityKey.max_voltage_cell);
+        return {minId, maxId};
+    }
+
     private _createCell(i) {
         const voltage = this.getState(EntityKey[`cell_voltage_${i}`], '0.0');
         const resistance = this.getState(EntityKey[`cell_resistance_${i}`]);
-        const minCell = this.getState(EntityKey.min_voltage_cell);
-        const maxCell = this.getState(EntityKey.max_voltage_cell);
+        const minCell = this.minCellId;
+        const maxCell = this.maxCellId;
 
         const color = i.toString() === minCell ? 'voltage-low'
             : i.toString() === maxCell ? 'voltage-high'
@@ -354,12 +397,10 @@ export class JkBmsCard extends LitElement{
         `;
     }
     private _updateFlowLine() {
-        const minId = this.getState(EntityKey.min_voltage_cell);
-        const maxId = this.getState(EntityKey.max_voltage_cell);
         const balanceCurrent = parseFloat(this.getState(EntityKey.balancing_current, '0'));
 
-        const minEl = this.renderRoot.querySelector(`#cell-${minId}`);
-        const maxEl = this.renderRoot.querySelector(`#cell-${maxId}`);
+        const minEl = this.renderRoot.querySelector(`#cell-${this.minCellId}`);
+        const maxEl = this.renderRoot.querySelector(`#cell-${this.maxCellId}`);
         const path = this.renderRoot.querySelector('#flow-path') as SVGPathElement;
 
         if (!path) return;
