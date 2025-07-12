@@ -267,7 +267,7 @@ export class JkBmsCard extends LitElement{
               ${localize('stats.power')} <span class="clickable ${powerClass}" @click=${(e) => this._navigate(e, EntityKey.power)}>${this.getState(EntityKey.power)} W</span><br>
               ${localize('stats.capacity')} <span class="clickable" @click=${(e) => this._navigate(e, EntityKey.total_battery_capacity_setting)}>${this.getState(EntityKey.total_battery_capacity_setting)} Ah</span><br>
               ${localize('stats.cycleCapacity')} <span class="clickable" @click=${(e) => this._navigate(e, EntityKey.total_charging_cycle_capacity)}>${this.getState(EntityKey.total_charging_cycle_capacity)} Ah</span><br>
-              ${localize('stats.averageCellV')} <span class="clickable" @click=${(e) => this._navigate(e, EntityKey.average_cell_voltage)}>${this.getState(EntityKey.average_cell_voltage)} V</span><br>
+              ${localize('stats.averageCellV')} <span class="clickable" @click=${(e) => this._navigate(e, EntityKey.average_cell_voltage)}>${this.getState(EntityKey.average_cell_voltage, 3)} V</span><br>
               ${localize('stats.balanceCurrent')} <span class="${balanceClass}">
               ${balanceCurrent.toFixed(1)} A
             </span>
@@ -386,8 +386,8 @@ export class JkBmsCard extends LitElement{
     }
 
     private _createCell(i) {
-        const voltage = this.getState(EntityKey[`cell_voltage_${i}`], 2, '0.0');
-        const resistance = this.getState(EntityKey[`cell_resistance_${i}`], 2);
+        const voltage = this.getState(EntityKey[`cell_voltage_${i}`], 3, '0.0');
+        const resistance = this.getState(EntityKey[`cell_resistance_${i}`], 3);
         const minCell = this.minCellId;
         const maxCell = this.maxCellId;
 
