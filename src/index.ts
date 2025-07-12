@@ -196,6 +196,9 @@ export class JkBmsCard extends LitElement{
 
     private getState(entityKey: EntityKey, precision: number = 2, defaultValue = '', type: "sensor" | "switch" | "number" = "sensor"): string {
         const configValue = this.configOrEnum(entityKey)
+        if (!configValue)
+            return defaultValue;
+
         const entityId = configValue.includes('sensor.') || configValue.includes('switch.') || configValue.includes('number.') ? configValue : `${type}.${this._config!.prefix}_${configValue}`;
         const entity = this.hass?.states[entityId];
         const state = entity?.state;
@@ -219,7 +222,7 @@ export class JkBmsCard extends LitElement{
 
     configOrEnum(entityId: EntityKey) {
         const configValue = this._config?.entities[entityId]?.toString()?.trim();
-        return configValue && configValue.length > 1 ? configValue : entityId.toString();
+        return configValue && configValue.length > 1 ? configValue : entityId?.toString();
     }
 
     render() {
